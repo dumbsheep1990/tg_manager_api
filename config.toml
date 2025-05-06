@@ -1,0 +1,68 @@
+# TG营销系统配置文件
+
+[system]
+env = "dev"       # 环境模式: dev, test, prod
+port = 8080       # 服务端口
+db-type = "mysql" # 数据库类型
+oss-type = "local" # 对象存储类型
+
+[etcd]
+endpoints = ["127.0.0.1:2379"] # etcd节点地址
+dial-timeout = 5      # 连接超时时间(秒)
+username = ""        # 用户名
+password = ""        # 密码
+task-prefix = "/tg_manager/tasks/"  # 任务状态key前缀
+lock-prefix = "/tg_manager/locks/" # 分布式锁前缀
+task-ttl = 86400     # 任务状态过期时间(秒)
+
+[nacos]
+ip-addr = "127.0.0.1"  # Nacos服务器IP
+port = 8848           # Nacos服务器端口
+namespace-id = "public" # 命名空间ID
+log-dir = "log/nacos"  # 日志目录
+cache-dir = "cache/nacos" # 缓存目录
+service-name = "tg-manager-api" # 服务名称
+group-name = "DEFAULT_GROUP" # 服务分组
+weight = 1.0          # 服务权重
+cluster-name = "DEFAULT" # 所属集群
+username = "nacos"    # 用户名
+password = "nacos"    # 密码
+
+[mysql]
+path = "127.0.0.1" # 服务器地址
+port = "3306"      # 端口
+config = "charset=utf8mb4&parseTime=True&loc=Local" # 高级配置
+db-name = "tg_manager"  # 数据库名
+username = "root"       # 用户名
+password = "root"       # 密码
+max-idle-conns = 10     # 最大空闲连接数
+max-open-conns = 100    # 最大连接数
+log-mode = true         # 是否开启Gorm全局日志
+
+[redis]
+addr = "127.0.0.1:6379" # 服务器地址:端口
+password = ""           # 密码
+db = 0                  # 数据库
+
+[rabbitmq]
+url = "amqp://guest:guest@localhost:5672/" # RabbitMQ连接字符串
+
+[rabbitmq.exchange]
+tasks = "tasks.exchange"    # 任务交换机
+results = "results.exchange" # 结果交换机
+
+[rabbitmq.queue]
+tdata-import = "tdata.import.queue"      # tdata导入队列
+telegram-action = "telegram.action.queue" # Telegram操作队列
+telegram-results = "telegram.results.queue" # 结果队列
+
+[zap]
+level = "info"           # 日志级别: debug, info, warn, error, dpanic, panic, fatal
+format = "console"       # 日志输出格式: console, json
+prefix = "[TG_MANAGER]"  # 日志前缀
+director = "log"         # 日志文件夹
+link-name = "latest.log" # 软链接名称
+show-line = true         # 显示行号
+encode-level = "LowercaseColorLevelEncoder" # 编码级别
+stacktrace-key = "stacktrace" # 栈名称
+log-in-console = true    # 输出控制台

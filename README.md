@@ -161,24 +161,6 @@ go mod tidy
 3. 配置环境:
 编辑 `config.toml` 配置数据库、Redis、RabbitMQ、etcd和nacos等连接信息:
 
-```toml
-# 数据库配置
-[mysql]
-host = "127.0.0.1"
-port = 3306
-database = "tg_manager"
-username = "root"
-password = "password"
-
-# Redis配置
-[redis]
-host = "127.0.0.1"
-port = 6379
-password = ""
-db = 0
-
-# 其他配置...
-```
 
 4. 启动服务:
 ```bash
@@ -205,19 +187,6 @@ go test ./test/account/...
 go test ./test/task/...
 ```
 
-## 部署
-
-### 标准部署
-```bash
-go build -o tg_manager_api
-./tg_manager_api
-```
-
-### Docker部署
-```bash
-docker build -t tg-manager-api .
-docker run -p 8888:8888 tg-manager-api
-```
 
 ## 架构图
 

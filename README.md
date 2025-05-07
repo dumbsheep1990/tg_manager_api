@@ -1,5 +1,19 @@
 # TG营销系统 - 后端API服务
 
+## 2025-05-07 开发更新
+
+### 服务层实现
+
+- 在 `services/account/service/account_service.go` 中实现了账号和账号组的业务逻辑
+- 实现账号导入、查询、更新、删除等功能
+- 添加业务验证和错误处理
+
+### API控制层整合
+
+- 在 `api/v1/account_group/account_group.go` 中使用服务层处理账号组的CRUD操作
+- 在 `api/v1/tdata_account/tdata_account.go` 中使用服务层处理tdata账号的导入、获取、更新和删除
+- 实现完整的API接口，满足前端需求
+
 ## 项目简介
 
 TG营销系统后端API服务是基于Golang开发的Telegram营销管理平台服务端，提供电报账号管理、任务调度、消息发送等功能的API接口。系统采用模块化架构设计，支持分布式部署，通过etcd管理任务状态，使用nacos实现服务注册发现，通过RabbitMQ与Python Worker协作处理Telegram API交互。

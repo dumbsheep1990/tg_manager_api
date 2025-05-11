@@ -17,6 +17,9 @@ func InitRouter() *gin.Engine {
 	
 	// 初始化Telegram管理相关路由
 	InitTgManagerRouter(apiV1)
+	
+	// 初始化任务和工作节点相关路由
+	InitTaskWorkerRouter(apiV1)
 
 	return router
 }

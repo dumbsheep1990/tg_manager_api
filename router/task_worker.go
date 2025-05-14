@@ -26,6 +26,7 @@ func InitTaskWorkerRouter(Router *gin.RouterGroup) {
 		taskRouter.GET("", taskController.GetTaskList)                         // 获取任务列表
 		taskRouter.GET("/:id", taskController.GetTaskDetail)                   // 获取任务详情
 		taskRouter.POST("/:id/cancel", taskController.CancelTask)              // 取消任务
+		taskRouter.GET("/:id/logs", taskController.GetTaskLogs)                // 获取任务日志
 	}
 	
 	// 账号关联任务路由

@@ -209,3 +209,39 @@ func (ctrl *TaskController) GetTasksByAccount(c *gin.Context) {
 		PageSize: pageSize,
 	}, "获取成功", c)
 }
+
+// GetTaskLogs 获取任务日志
+// @Summary 获取任务日志
+// @Description 获取指定任务的执行日志
+// @Tags Task
+// @Accept json
+// @Produce json
+// @Param id path string true "任务ID"
+// @Param page query int false "页码" default(1)
+// @Param page_size query int false "每页数量" default(10)
+// @Success 200 {object} response.Response{data=response.PageResult{list=[]string}} "获取成功"
+// @Router /api/v1/task/{id}/logs [get]
+func (ctrl *TaskController) GetTaskLogs(c *gin.Context) {
+	// 获取任务ID
+	taskID := c.Param("id")
+	
+	// 获取分页参数
+	page, pageSize := utils.GetPage(c)
+	
+	// 获取任务服务
+	taskService := task.GetTaskServiceFromContext(c)
+	
+	// 获取任务日志
+	logs, total, err := taskService.GetTaskLogs(c, taskID, page, pageSize)
+	if err != nil {
+		response.FailWithMessage("获取任务日志失败: "+err.Error(), c)
+		return
+	}
+	
+	response.OkWithDetailed(response.PageResult{
+		List:     logs,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
+	}, "获取成功", c)
+}

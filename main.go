@@ -8,9 +8,13 @@ import (
 	"tg_manager_api/global"
 	"tg_manager_api/initialize"
 	"tg_manager_api/services/core"
+	"tg_manager_api/services/task/scheduler"
 
 	"go.uber.org/zap"
 )
+
+// 全局任务调度器
+var taskScheduler *scheduler.TaskScheduler
 
 func main() {
 	// 初始化配置、数据库、缓存等组件
@@ -23,6 +27,14 @@ func main() {
 	
 	// 初始化服务模块
 	core.InitializeServices()
+	
+	// 初始化任务调度器
+	taskScheduler = initialize.InitTaskScheduler()
+	if taskScheduler == nil {
+		global.Logger.Warn("任务调度器初始化失败，将无法处理分布式任务")
+	} else {
+		global.Logger.Info("任务调度器启动成功")
+	}
 	
 	// 优雅关闭服务
 	go gracefulShutdown()
@@ -42,6 +54,12 @@ func gracefulShutdown() {
 	
 	// 收到退出信号后执行清理操作
 	global.Logger.Info("收到退出信号，正在关闭服务...")
+	
+	// 停止任务调度器
+	if taskScheduler != nil {
+		taskScheduler.Stop()
+		global.Logger.Info("任务调度器已停止")
+	}
 	
 	// 从nacos注销服务
 	initialize.DeregisterService()

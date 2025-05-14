@@ -3,16 +3,30 @@ package rabbitmq
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 	
 	"github.com/streadway/amqp"
 	
 	"tg_manager_api/global"
+	"tg_manager_api/model"
 )
 
 // RabbitMQService RabbitMQ服务接口
 type RabbitMQService interface {
 	// 发布消息到队列
 	PublishMessage(exchange, routingKey string, body interface{}) error
+	
+	// 发布任务消息
+	PublishTask(taskType string, taskData []byte) error
+	
+	// 发布任务取消消息
+	PublishTaskCancel(taskData []byte) error
+	
+	// 发布任务结果消息
+	PublishTaskResult(taskData []byte) error
+	
+	// 创建任务结果消费者
+	CreateTaskResultConsumer(handler func([]byte) error) error
 	
 	// 创建消费者
 	CreateConsumer(exchange, queueName, bindingKey string, handler func([]byte) error) error
@@ -167,6 +181,48 @@ func (s *rabbitMQService) CreateConsumer(exchange, queueName, bindingKey string,
 	}()
 	
 	return nil
+}
+
+// PublishTask 发布任务消息
+func (s *rabbitMQService) PublishTask(taskType string, taskData []byte) error {
+	// 使用任务交换机
+	exchange := global.Config.RabbitMQ.Exchange.Tasks
+	// 路由键格式: task.<task_type>
+	routingKey := fmt.Sprintf("task.%s", taskType)
+	
+	return s.PublishMessage(exchange, routingKey, taskData)
+}
+
+// PublishTaskCancel 发布任务取消消息
+func (s *rabbitMQService) PublishTaskCancel(taskData []byte) error {
+	// 使用任务交换机
+	exchange := global.Config.RabbitMQ.Exchange.Tasks
+	// 路由键: task.cancel
+	routingKey := "task.cancel"
+	
+	return s.PublishMessage(exchange, routingKey, taskData)
+}
+
+// PublishTaskResult 发布任务结果消息
+func (s *rabbitMQService) PublishTaskResult(taskData []byte) error {
+	// 使用结果交换机
+	exchange := global.Config.RabbitMQ.Exchange.Results
+	// 使用默认路由键
+	routingKey := "task.result"
+	
+	return s.PublishMessage(exchange, routingKey, taskData)
+}
+
+// CreateTaskResultConsumer 创建任务结果消费者
+func (s *rabbitMQService) CreateTaskResultConsumer(handler func([]byte) error) error {
+	// 使用结果交换机
+	exchange := global.Config.RabbitMQ.Exchange.Results
+	// 队列名称: task_results
+	queueName := "task_results"
+	// 绑定键: task.result
+	bindingKey := "task.result"
+	
+	return s.CreateConsumer(exchange, queueName, bindingKey, handler)
 }
 
 // Close 关闭连接

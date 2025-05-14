@@ -13,38 +13,32 @@ import (
 	"tg_manager_api/model"
 	"tg_manager_api/services/rabbitmq"
 	"tg_manager_api/services/worker/service"
+	"tg_manager_api/utils"
 )
 
 // TaskServiceI 任务服务接口
 type TaskServiceI interface {
 	// 创建任务
-	CreateTask(ctx context.Context, taskType string, accountID uint, params map[string]interface{}) (*model.Task, error)
+	CreateTask(ctx context.Context, taskType string, accountID uint, params map[string]interface{}) (string, error)
 	
 	// 获取任务列表
-	GetTasks(ctx context.Context, page, pageSize int) ([]*model.Task, int64, error)
+	GetTasks(ctx context.Context, page, pageSize int) ([]*Task, int64, error)
 	
 	// 获取任务详情
-	GetTask(ctx context.Context, taskID string) (*model.Task, error)
+	GetTask(ctx context.Context, taskID string) (*Task, error)
 	
 	// 更新任务状态
-	UpdateTaskStatus(ctx context.Context, taskID, status string, result map[string]interface{}, errorMsg string) error
+	UpdateTaskStatus(ctx context.Context, taskID string, status TaskStatus, result string, errorMsg string) error
 	
 	// 取消任务
 	CancelTask(ctx context.Context, taskID string) error
 	
-	// 处理任务结果
-	ProcessTaskResult(ctx context.Context, taskID string, result map[string]interface{}, success bool, errorMsg string) error
-	
-	// 分配任务
-	AssignTask(ctx context.Context, task *model.Task) error
+	// 获取任务日志
+	GetTaskLogs(ctx context.Context, taskID string, page, pageSize int) ([]string, int64, error)
 }
 
-// NewTaskService 创建任务服务实例
-func NewTaskService() TaskServiceI {
-	return &taskServiceImpl{
-		workerService: service.NewWorkerService(),
-	}
-}
+// taskService 任务服务实现
+type taskService struct{}
 
 // taskServiceImpl 任务服务实现
 type taskServiceImpl struct {
